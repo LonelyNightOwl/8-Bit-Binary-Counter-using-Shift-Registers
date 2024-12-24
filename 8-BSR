@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h> // for sleep function on UNIX-like systems
+
+#define SIZE 8 // 8-bit shift register size
+
+// Function Prototypes
+void displayMenu();
+void initializeRegister(int *registerArray);
+void displayRegister(int *registerArray);
+void shiftLeft(int *registerArray, int input);
+void shiftRight(int *registerArray, int input);
+void binaryCounter(int *registerArray);
+void delay(int seconds);
+
+// Main function
+int main() {
+    int registerArray[SIZE];
+    int choice;
+    int inputBit;
+
+    initializeRegister(registerArray);
+
+    while (1) {
+        displayMenu();
+        printf("\nEnter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                initializeRegister(registerArray);
+                printf("\nRegister initialized to all zeros.\n");
+                break;
+            case 2:
+                printf("\nEnter the bit to shift in (0 or 1): ");
+                scanf("%d", &inputBit);
+                if (inputBit == 0 || inputBit == 1) {
+                    shiftLeft(registerArray, inputBit);
+                    printf("\nShift left completed.\n");
+                } else {
+                    printf("\nInvalid input. Please enter 0 or 1.\n");
+                }
+                break;
+            case 3:
+                printf("\nEnter the bit to shift in (0 or 1): ");
+                scanf("%d", &inputBit);
+                if (inputBit == 0 || inputBit == 1) {
+                    shiftRight(registerArray, inputBit);
+                    printf("\nShift right completed.\n");
+                } else {
+                    printf("\nInvalid input. Please enter 0 or 1.\n");
+                }
+                break;
+            case 4:
+                binaryCounter(registerArray);
+                break;
+            case 5:
+                printf("\nExiting the program. Goodbye!\n");
+                exit(0);
+            default:
+                printf("\nInvalid choice. Please try again.\n");
+        }
+
+        displayRegister(registerArray);
+    }
+
+    return 0;
+}
+
+// Function to display the menu
+void displayMenu() {
+    printf("\n--- 8-Bit Shift Register Simulation ---\n");
+    printf("1. Initialize Register\n");
+    printf("2. Shift Left\n");
+    printf("3. Shift Right\n");
+    printf("4. Binary Counter Simulation\n");
+    printf("5. Exit\n");
+}
+
+// Function to initialize the register to all zeros
+void initializeRegister(int *registerArray) {
+    for (int i = 0; i < SIZE; i++) {
+        registerArray[i] = 0;
+    }
+}
+
+// Function to display the current state of the register
+void displayRegister(int *registerArray) {
+    printf("\nRegister State: ");
+    for (int i = 0; i < SIZE; i++) {
+        printf("%d ", registerArray[i]);
+    }
+    printf("\n");
+}
+
+// Function to shift the register left
+void shiftLeft(int *registerArray, int input) {
+    for (int i = 0; i < SIZE - 1; i++) {
+        registerArray[i] = registerArray[i + 1];
+    }
+    registerArray[SIZE - 1] = input;
+}
+
+// Function to shift the register right
+void shiftRight(int *registerArray, int input) {
+    for (int i = SIZE - 1; i > 0; i--) {
+        registerArray[i] = registerArray[i - 1];
+    }
+    registerArray[0] = input;
+}
+
+// Function to simulate an 8-bit binary counter
+void binaryCounter(int *registerArray) {
+    initializeRegister(registerArray);
+    printf("\nStarting Binary Counter Simulation...\n");
+
+    for (int count = 0; count < (1 << SIZE); count++) {
+        for (int i = 0; i < SIZE; i++) {
+            registerArray[i] = (count >> (SIZE - 1 - i)) & 1;
+        }
+        displayRegister(registerArray);
+        delay(1); // Delay of 1 second between each count
+    }
+    printf("\nBinary Counter Simulation Complete.\n");
+}
+
+// Function to create a delay
+void delay(int seconds) {
+    sleep(seconds);
+}
