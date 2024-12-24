@@ -1,0 +1,81 @@
+#include <stdio.h>
+// Structure to hold the state of the JK flip-flop
+typedef struct
+{
+	int J;
+	int K;
+	int clk;
+	int Q;
+	int Qn;
+} JKFlipFlop;
+
+// Function to simulate the master-slave JK flip-flop behavior
+void simulateJKFlipFlop(JKFlipFlop *ff)
+{
+	// Master flip-flop reacts to the J and K inputs on the rising edge of the clock
+	if (ff->clk == 1)
+	{
+		// Master flip-flop logic
+		if (ff->J == 1 && ff->K == 0)
+		{
+			ff->Q = 1;  // Set Q
+			ff->Qn = 0; // Q' = 0
+		}
+		else if (ff->J == 0 && ff->K == 1) {
+			ff->Q = 0;  // Reset Q
+			ff->Qn = 1; // Q' = 1
+		} else if (ff->J == 1 && ff->K == 1) {
+			ff->Q = !ff->Q;  // Toggle Q
+			ff->Qn = !ff->Qn; // Toggle Q'
+		}
+	}
+}
+
+// Function to simulate the clock pulse and the slave flip-flop
+void clockPulse(JKFlipFlop *ff) {
+	// Clock pulse behavior
+	ff->clk = 1;  // Clock goes high (rising edge)
+	simulateJKFlipFlop(ff);
+
+	// Slave flip-flop output follows the master after the clock goes low
+	ff->clk = 0;  // Clock goes low (falling edge)
+	// Slave flip-flop does not change on the falling edge, so no need for further updates here.
+}
+
+int main() 
+{
+	// Declare the JK flip-flop with initial states
+	JKFlipFlop ff = {0, 0, 0, 0, 1}; // Initial state: J=0, K=0, Q=0, Qn=1
+
+	// Display initial states
+	printf("Initial State: Q = %d, Q' = %d\n", ff.Q, ff.Qn);
+
+	// Simulate a few clock pulses with different J and K inputs
+	printf("\nSimulating JK Flip-Flop with different J and K inputs:\n");
+
+	// First pulse: J = 1, K = 0
+	ff.J = 1;
+	ff.K = 0;
+	clockPulse(&ff);
+	printf("After Clock Pulse 1 (J = 1, K = 0): Q = %d, Q' = %d\n", ff.Q, ff.Qn);
+
+	// Second pulse: J = 0, K = 1
+	ff.J = 0;
+	ff.K = 1;
+	clockPulse(&ff);
+	printf("After Clock Pulse 2 (J = 0, K = 1): Q = %d, Q' = %d\n", ff.Q, ff.Qn);
+
+	// Third pulse: J = 1, K = 1
+	ff.J = 1;
+	ff.K = 1;
+	clockPulse(&ff);
+	printf("After Clock Pulse 3 (J = 1, K = 1): Q = %d, Q' = %d\n", ff.Q, ff.Qn);
+
+	// Fourth pulse: J = 0, K = 0
+	ff.J = 0;
+	ff.K = 0;
+	clockPulse(&ff);
+	printf("After Clock Pulse 4 (J = 0, K = 0): Q = %d, Q' = %d\n", ff.Q, ff.Qn);
+
+	return 0;
+}
